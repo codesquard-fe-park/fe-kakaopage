@@ -12,20 +12,35 @@ const updateNodeClasses = (target, className) => {
   target.classList.add(className);
 };
 
+const getComponentsTemplate = (components) => {
+  return components?.reduce((tags, component) => {
+    tags += component.template();
+    return tags;
+  }, "");
+};
+
 const formatUserCount = (userCount) => {
   return (userCount / 10000).toFixed(1) + "만명";
 };
 
-const getJson = (dataName) => {
-  return new Promise((resolve, reject) => {
-    try {
-      fetch(`${HEROKU_SERVER_URL}${dataName}`)
-        .then((response) => response.json())
-        .then((json) => resolve(json));
-    } catch (error) {
-      reject(error);
-    }
-  });
+const getJson = async (dataName) => {
+  try {
+    const response = await fetch(`${HEROKU_SERVER_URL}${dataName}`);
+    return response.json();
+  } catch (error) {
+    console.error(error);
+  }
 };
 
-export { updateNodeClasses, getJson, formatUserCount, createExtendsRelation };
+const getJsons = (paths) => {
+  return Promise.all(paths.map((path) => getJson(path)));
+};
+
+export {
+  updateNodeClasses,
+  getJson,
+  formatUserCount,
+  createExtendsRelation,
+  getJsons,
+  getComponentsTemplate,
+};
